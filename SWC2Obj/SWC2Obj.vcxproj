@@ -115,6 +115,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="ObjWriter.cpp" />
+    <ClCompile Include="SWCReader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="based.h" />
+    <ClInclude Include="cmdline.h" />
+    <ClInclude Include="ObjWriter.h" />
+    <ClInclude Include="SWCReader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
