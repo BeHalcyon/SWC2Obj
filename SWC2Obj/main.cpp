@@ -5,14 +5,14 @@
 
 int main(int argc, char* argv[])
 {
-	std::string swc_file = "";
-	std::string obj_file = "";
+	std::string swc_file = R"(F:\14193_30neurons\N023.swc)";
+	std::string obj_file = R"(F:\14193_30neurons\N023.obj)";
 	int x_dimension = 28452;
 	int y_dimension = 21866;
 	int z_dimension = 4834;
 
-	double x_space = 0.33;
-	double y_space = 0.33;
+	double x_space = 0.32;
+	double y_space = 0.32;
 	double z_space = 2;
 
 	int x_n = 889;
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 	if(argc<2)
 	{
 		std::cout << "Please use command line parameter." << std::endl;
-		return 0;
+		//return 0;
 	}
 	else
 	{
@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
 		a.add<int>("y", 'Y', "dimension of y direction", false, 21866);
 		a.add<int>("z", 'Z', "dimension of z direction", false, 4834);
 
-		a.add<double>("sx", 'x', "space of x direction", false, 0.33);
-		a.add<double>("sy", 'y', "space of y direction", false, 0.33);
+		a.add<double>("sx", 'x', "space of x direction", false, 0.32);
+		a.add<double>("sy", 'y', "space of y direction", false, 0.32);
 		a.add<double>("sz", 'z', "space of z direction", false, 2);
 
 		a.add<int>("nx", 'i', "new dimension of x direction", false, 889);
@@ -78,11 +78,17 @@ int main(int argc, char* argv[])
 
 	if(is_normalized)
 	{
-		obj_writer.writeObjNormalization(obj_file, x_bounding/x_n, y_bounding / y_n, z_bounding / z_n);
+		obj_writer.writeObjNormalization(obj_file, x_bounding/(x_n), 
+			y_bounding / (y_n), z_bounding / (z_n*z_space/x_space));
 	}
 	else
 	{
-		obj_writer.writeObj(obj_file);
+		obj_writer.writeObj(obj_file,x_space,y_space,z_space);
+	}
+	auto is_normalized_to_one = false;
+	if(is_normalized_to_one)
+	{
+		obj_writer.writeNormalizeToOneObj(obj_file, 6200, 6500, 2250, 512, 512, 512);
 	}
 
 	std::cout << "obj file" + obj_file + " has been generated." << std::endl;

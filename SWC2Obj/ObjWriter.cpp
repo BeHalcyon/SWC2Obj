@@ -2,6 +2,7 @@
 #include <map>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 ObjWriter::ObjWriter(std::vector<Vertex> point_vec):point_vector(point_vec)
 {
@@ -78,7 +79,8 @@ void ObjWriter::searchPath()
 	// std::cout << "Sum :\t" << sum << std::endl;
 }
 
-void ObjWriter::writeObj(const std::string & file_path)
+void ObjWriter::writeNormalizeToOneObj(const std::string & file_path, const int & x_start, const int & y_start, const int & z_start,
+	const int & x_dim, const int & y_dim, const int & z_dim)
 {
 
 	std::ofstream write_file(file_path);
@@ -87,8 +89,13 @@ void ObjWriter::writeObj(const std::string & file_path)
 
 	for(auto & vertex: point_vector)
 	{
-		write_file << "v " << vertex.x <<" "<< vertex.y << " " << vertex.z << std::endl;
+		
+		write_file << "v " << (vertex.x-x_start)/ x_dim <<" "<< (vertex.y - y_start) / y_dim << " " << (vertex.z - z_start) / z_dim << std::endl;
+	
+		
 	}
+
+
 
 	for(auto j=0;j< paths.size();j++)
 	{
@@ -103,6 +110,48 @@ void ObjWriter::writeObj(const std::string & file_path)
 }
 
 
+void ObjWriter::writeObj(const std::string & file_path, const double& x_space, const double& y_space, const double& z_space)
+{
+
+	std::ofstream write_file(file_path);
+
+	write_file << "#vertex_num " << static_cast<unsigned int>(point_vector.size()) << std::endl;
+
+
+	double max_x = -999999, min_x = 999999;
+	double max_y = -999999, min_y = 999999;
+	double max_z = -999999, min_z = 999999;
+
+	for (auto & vertex : point_vector)
+	{
+		
+		write_file << "v " << (vertex.x) / x_space << " " << (vertex.y) / y_space << " " << (vertex.z) / z_space << std::endl;
+		vertex.x /= x_space;
+		vertex.y /= y_space;
+		vertex.z /= z_space;
+
+		max_x = std::max(max_x, vertex.x);
+		max_y = std::max(max_y, vertex.y);
+		max_z = std::max(max_z, vertex.z);
+		min_x = std::min(min_x, vertex.x);
+		min_y = std::min(min_y, vertex.y);
+		min_z = std::min(min_z, vertex.z);
+	}
+
+	std::cout << "Bounding box : [" << min_x << ", " << min_y << ", " << min_z << "] --- [" << max_x << ", " << max_y << ", " << max_z << "]" << std::endl;
+
+	for (auto j = 0; j < paths.size(); j++)
+	{
+		auto & path = paths[j].path;
+		write_file << "g" << " path" << paths[j].path_type << std::endl;
+		for (int i = path.size() - 1; i >= 1; i--)
+		{
+			write_file << "l" << " " << path[i].index << " " << path[i - 1].index << std::endl;
+		}
+	}
+	write_file.close();
+}
+
 void ObjWriter::writeObjNormalization(const std::string & file_path, const double x_bounding, const double y_bounding, const double z_bounding)
 {
 
@@ -112,7 +161,11 @@ void ObjWriter::writeObjNormalization(const std::string & file_path, const doubl
 
 	for (auto & vertex : point_vector)
 	{
+		
 		write_file << "v " << vertex.x/x_bounding << " " << vertex.y / y_bounding << " " << vertex.z / z_bounding << std::endl;
+		vertex.x /= x_bounding;
+		vertex.y /= y_bounding;
+		vertex.z /= z_bounding;
 	}
 
 	for (auto j = 0; j < paths.size(); j++)
