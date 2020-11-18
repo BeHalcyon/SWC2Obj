@@ -5,8 +5,8 @@
 
 int main(int argc, char* argv[])
 {
-	std::string swc_file = R"(F:\14193_30neurons\N023.swc)";
-	std::string obj_file = R"(F:\14193_30neurons\N023.obj)";
+	std::string swc_file = R"(E:\14193_30neurons\N023.swc)";
+	std::string obj_file = R"(E:\14193_30neurons\N023.obj)";
 	int x_dimension = 28452;
 	int y_dimension = 21866;
 	int z_dimension = 4834;

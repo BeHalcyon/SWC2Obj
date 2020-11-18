@@ -1,5 +1,6 @@
 #pragma once
 #include "based.h"
+#include <string>
 
 
 class ObjWriter

@@ -20,7 +20,7 @@ ObjWriter::~ObjWriter()
 
 void ObjWriter::searchPath()
 {
-	//1. »ñÈ¡ËùÓÐÒ¶×Ó½áµã
+	//1. ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ò¶ï¿½Ó½ï¿½ï¿½
 	std::vector<int> leaf_nodes;
 	std::map<int, int> vertex_hash;
 	for (auto i = 0; i < point_vector.size(); i++)
@@ -41,7 +41,7 @@ void ObjWriter::searchPath()
 			leaf_nodes.push_back(i.current_id);
 		}
 	}
-	//2. ´ÓÒ¶×Ó½áµã³ö·¢£¬ÏòÇ°²éÕÒÂ·¾¶
+	//2. ï¿½ï¿½Ò¶ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½
 	auto path_index = 0;
 	for(auto & left_node : leaf_nodes)
 	{
@@ -95,8 +95,6 @@ void ObjWriter::writeNormalizeToOneObj(const std::string & file_path, const int 
 		
 	}
 
-
-
 	for(auto j=0;j< paths.size();j++)
 	{
 		auto & path = paths[j].path;
@@ -116,6 +114,7 @@ void ObjWriter::writeObj(const std::string & file_path, const double& x_space, c
 	std::ofstream write_file(file_path);
 
 	write_file << "#vertex_num " << static_cast<unsigned int>(point_vector.size()) << std::endl;
+	std::cout << "#vertex_num " << static_cast<unsigned int>(point_vector.size()) << std::endl;
 
 
 	double max_x = -999999, min_x = 999999;

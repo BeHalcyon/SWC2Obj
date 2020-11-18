@@ -1,5 +1,5 @@
 #include <iostream>
-#include "VMUtils/include/VMUtils/json_binding.hpp"
+
 #include "VMUtils/include/VMUtils/cmdline.hpp"
 #include "VMat/include/VMat/geometry.h"
 #include "VMat/include/VMat/numeric.h"
@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 #include <set>
+#include "json_struct.h"
 
 struct BlockID
 {
@@ -19,31 +20,13 @@ struct BlockID
 
 	bool operator<(const BlockID& other) const
 	{
-		return x < other.x? true : (y == other.y ? z < other.z : y < other.y);
+		return x < other.x ? true : (y == other.y ? z < other.z : y < other.y);
 	}
 	std::vector<int> toArray() const
 	{
 		return { x,y,z };
 	}
 };
-
-struct BlockNumberJsonStruct: public vm::json::Serializable<BlockNumberJsonStruct>
-{
-	VM_JSON_FIELD(std::string, obj_file);
-	VM_JSON_FIELD(std::vector<std::vector<int>>, block_number_array);
-};
-
-
-struct OutputJsonStruct : public vm::json::Serializable<OutputJsonStruct>
-{
-	VM_JSON_FIELD(std::vector<BlockNumberJsonStruct>, blocks);
-}BlocksJson;
-
-struct InputJsonStruct : public vm::json::Serializable<InputJsonStruct>
-{
-	VM_JSON_FIELD(std::vector<std::string>, obj_files);
-	VM_JSON_FIELD(std::string, file_prefix);
-}ObjFilesJson;
 
 bool readObj(const std::string& filename, std::vector<ysl::Point3f>& point_set)
 {
@@ -117,9 +100,14 @@ void calcBlockArray(const std::string & filename, const int block_based, const i
 
 int main(int argc, char* argv[])
 {
+
+	struct OutputJsonStruct BlocksJson;
+	struct InputJsonStruct ObjFilesJson;
+
+	
 	std::string obj_json_path = "";
 
-	int block_based = 5;	//pow
+	int block_based = 7;	//pow
 	int padding = 2;			//padding
 	int x_dimension = 0;
 	int y_dimension = 0;
@@ -132,9 +120,9 @@ int main(int argc, char* argv[])
 	}
 
 	cmdline::parser a;
-	a.add<std::string>("objfiles", 'f', "input obj json files", false, R"(E:\project\science_project\SWC2Obj\x64\Release\workspace\obj_files.json)");
-	a.add<std::string>("output", 'o', "output json files", false, R"(E:\project\science_project\SWC2Obj\x64\Release\workspace\block_array.json)");
-	a.add<int>("block_based", 'b', "block length base number", false, 5);
+	a.add<std::string>("objfiles", 'f', "input obj json files", false, R"(D:\project\science_project\SWC2Obj\x64\Release\workspace\obj_files.json)");
+	a.add<std::string>("output", 'o', "output json files", false, R"(D:\project\science_project\SWC2Obj\x64\Release\workspace\block_array.json)");
+	a.add<int>("block_based", 'b', "block length base number", false, 7);
 	a.add<int>("padding", 'p', "block padding", false, 2);
 	a.add<int>("x", 'x', "x dimension of raw volume", false, 28452);
 	a.add<int>("y", 'y', "y dimension of raw volume", false, 21866);
@@ -161,9 +149,17 @@ int main(int argc, char* argv[])
 
 		std::vector<BlockNumberJsonStruct> buf_blocks;
 
+		
+		
 		for (const auto& obj_file : obj_files)
 		{
+			std::cout << "--------------------------Calculation for " << obj_file << "--------------------------" << std::endl;
+
+			
 			std::set<BlockID> block_set;
+
+			std::vector<int> block_max_bounding(3, -0xfffffff);
+			std::vector<int> block_min_bounding(3, 0xfffffff);
 			
 			calcBlockArray(file_prefix + obj_file, block_based, padding, {x_dimension, y_dimension, z_dimension}, block_set);
 
@@ -173,11 +169,44 @@ int main(int argc, char* argv[])
 			for(auto & block: block_set)
 			{
 				block_array.push_back(block.toArray());
+				block_max_bounding[0] = std::max(block_max_bounding[0], block.x);
+				block_max_bounding[1] = std::max(block_max_bounding[1], block.y);
+				block_max_bounding[2] = std::max(block_max_bounding[2], block.z);
+
+				block_min_bounding[0] = std::min(block_min_bounding[0], block.x);
+				block_min_bounding[1] = std::min(block_min_bounding[1], block.y);
+				block_min_bounding[2] = std::min(block_min_bounding[2], block.z);
 			}
+			
 
 			buf_block_number_json.set_block_number_array(block_array);
 
+			buf_block_number_json.set_block_max_bounding(block_max_bounding);
+			buf_block_number_json.set_block_min_bounding(block_min_bounding);
+
+			buf_block_number_json.set_padding(padding);
+			buf_block_number_json.set_block_based_number(block_based);
+
 			buf_blocks.push_back(buf_block_number_json);
+
+			double size = block_set.size() * pow(2, block_based * 3)/1024/1024;
+
+			unsigned long long bounding_number = (block_max_bounding[0] - block_min_bounding[0] + 1) *
+				(block_max_bounding[1] - block_min_bounding[1] + 1) *
+				(block_max_bounding[2] - block_min_bounding[2] + 1);
+			
+			std::cout << "Block number :\t\t" << block_set.size() << std::endl;
+			std::cout << "Bounding block number :\t" << bounding_number << std::endl;
+			
+			std::cout << "Size of the block data for " << obj_file << " :\t" << size << "MB" << std::endl;
+
+			size = (block_max_bounding[0] - block_min_bounding[0] + 1)*
+				(block_max_bounding[1] - block_min_bounding[1] + 1)*
+				(block_max_bounding[2] - block_min_bounding[2] + 1)
+			* pow(2, block_based * 3) / 1024 / 1024 / 1024;
+
+			std::cout << "Size of the bounding box data for " << obj_file << " : " << size << "GB" << std::endl;
+			
 		}
 
 		BlocksJson.set_blocks(buf_blocks);
@@ -193,9 +222,5 @@ int main(int argc, char* argv[])
 	{
 		vm::println("{}", e.what());
 	}
-
-
-
-
 
 }

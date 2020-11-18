@@ -17,19 +17,19 @@ void line_process(std::string &line, const std::string comment_str = "#")
 {
 	for (char &c : line)
 	{
-		//ÖÆ±í·û tab£¬¶ººÅ£¬·ÖºÅ¶¼µ±×÷ÓÐÐ§µÄ·Ö¸ô·û£¬Í³Ò»×ª³É¿Õ¸ñ
-		//ÎªÁË±ÜÃâ´íÎó£¬»Ø³µ·ûºÍ»»ÐÐ·ûÒ²×ªÎª¿Õ¸ñ£¨·ñÔòÎÞ·¨´¦Àí¿ÕÐÐ£©
+		//ï¿½Æ±ï¿½ï¿½ tabï¿½ï¿½ï¿½ï¿½ï¿½Å£ï¿½ï¿½ÖºÅ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½Ä·Ö¸ï¿½ï¿½ï¿½ï¿½Í³Ò»×ªï¿½É¿Õ¸ï¿½
+		//Îªï¿½Ë±ï¿½ï¿½ï¿½ï¿½ï¿½ó£¬»Ø³ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½Ð·ï¿½Ò²×ªÎªï¿½Õ¸ñ£¨·ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð£ï¿½
 		if (c == '\t' || c == ',' || c == ';' || c == '\r' || c == '\n')
 			c = ' ';
 	}
 
-	line.erase(0, line.find_first_not_of(" "));//É¾³ýÐÐÊ×¿Õ¸ñ
-	line.erase(line.find_last_not_of(" ") + 1);//É¾³ýÐÐÄ©¿Õ¸ñ
+	line.erase(0, line.find_first_not_of(" "));//É¾ï¿½ï¿½ï¿½ï¿½ï¿½×¿Õ¸ï¿½
+	line.erase(line.find_last_not_of(" ") + 1);//É¾ï¿½ï¿½ï¿½ï¿½Ä©ï¿½Õ¸ï¿½
 
-   //²éÕÒ×¢ÊÍ·ûËùÔÚÎ»ÖÃ£¬Èç¹û²»´æÔÚ£¬ÔòµÃµ½string::npos
+   //ï¿½ï¿½ï¿½ï¿½×¢ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½Ãµï¿½string::npos
 	int n_comment_start = line.find_first_of(comment_str);
-	if (n_comment_start != std::string::npos)//ÕâÒ»¾ä±ØÐëµÄ
-		line.erase(n_comment_start);         //É¾³ý×¢ÊÍ
+	if (n_comment_start != std::string::npos)//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		line.erase(n_comment_start);         //É¾ï¿½ï¿½×¢ï¿½ï¿½
 }
 
 void SWCReader::readSWC(const std::string& file_name)
@@ -42,10 +42,10 @@ void SWCReader::readSWC(const std::string& file_name)
 		std::string line;
 		while (std::getline(read_file, line))
 		{
-			line_process(line);//°ÑÐÐÊ×ºÍÐÐÎ²µÄ¶à¸ö¿Õ¸ñ, tabÈ¥µô£¬°Ñ×¢ÊÍÎÄ×ÖÒ²È¥µô
-			if (line.empty()) continue;//lineÎª¿ÕÔò¼ÌÐø
+			line_process(line);//ï¿½ï¿½ï¿½ï¿½ï¿½×ºï¿½ï¿½ï¿½Î²ï¿½Ä¶ï¿½ï¿½ï¿½Õ¸ï¿½, tabÈ¥ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²È¥ï¿½ï¿½
+			if (line.empty()) continue;//lineÎªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-			//¸ù¾ÝÊµ¼ÊÐèÇó´¦Àí
+			//ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			std::istringstream iss(line);
 
 			struct Vertex point{};
